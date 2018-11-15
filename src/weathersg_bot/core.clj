@@ -1,14 +1,15 @@
 (ns weathersg-bot.core
-  (:require [ring.adapter.jetty :refer [run-jetty]]
-            [ring.middleware.json :refer [wrap-json-body]])
+  (:require [ring.middleware.json :refer [wrap-json-body]]
+            [compojure.core :refer :all]
+            [org.httpkit.server :refer [run-server]])
   (:gen-class))
 
-(defn handler [request]
-  (println (:body request))
-  {:status  200
-   :headers {"Content-Type" "text/plain"}
-   :body    "Hello, World"})
+(defroutes app
+           (POST "/" req (do (println (:body req))
+                             {:status  200
+                              :headers {"Content-Type" "text/plain"}
+                              :body    "Hello, World"})))
 
 (defn -main [& args]
-  (run-jetty (wrap-json-body handler)
-             {:port (Integer/valueOf ^String (or (System/getenv "PORT") "3000"))}))
+  (run-server (wrap-json-body app)
+              {:port (Integer/valueOf ^String (or (System/getenv "PORT") "3000"))}))
