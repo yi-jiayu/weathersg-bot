@@ -45,8 +45,7 @@
 (defn generate-rain-areas
   [overlay-path output-path]
   (with-open [base-img (io/input-stream (io/resource "base.png"))]
-    (sh "magick"
-        "composite"
+    (sh "composite"
         overlay-path
         "png:-"
         "-geometry" "853x479!"
