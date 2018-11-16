@@ -1,4 +1,4 @@
-(defproject weathersg-bot "0.1.0-SNAPSHOT"
+(defproject weathersg-bot "0.2.1-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [ring/ring-core "1.7.1"]
                  [ring/ring-json "0.4.0"]
+                 [ring-json-response "0.2.0"]
                  [compojure "1.6.1"]
                  [http-kit "2.2.0"]]
   :java-source-paths ["src/java"]
