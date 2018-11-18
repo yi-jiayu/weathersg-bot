@@ -1,4 +1,4 @@
-(defproject weathersg-bot "0.3.2-SNAPSHOT"
+(defproject weathersg-bot "0.4.4-SNAPSHOT"
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"

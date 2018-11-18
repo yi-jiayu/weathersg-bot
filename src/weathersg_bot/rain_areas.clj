@@ -21,7 +21,7 @@
 
 (defn get-formatted-timestamp
   [ts]
-  (.format radar-timestamp-formatter (truncate-timestamp ts)))
+  (.format radar-timestamp-formatter ts))
 
 (defn get-radar-overlay-name
   [formatted-ts]
@@ -42,16 +42,34 @@
               out (io/output-stream dst)]
     (io/copy in out)))
 
+(defn throw-on-failure
+  [sh-result]
+  (let [{exit-code :exit
+         stderr    :err} sh-result]
+    (if (not (zero? exit-code))
+      (throw (new RuntimeException stderr)))))
+
 (defn generate-rain-areas
   [overlay-path output-path]
   (with-open [base-img (io/input-stream (io/resource "base.png"))]
-    (sh "composite"
-        overlay-path
-        "png:-"
-        "-geometry" "853x479!"
-        "-blend" "50"
-        output-path
-        :in base-img)))
+    (throw-on-failure (sh "composite"
+                          overlay-path
+                          "png:-"
+                          "-geometry" "853x479!"
+                          "-blend" "50"
+                          output-path
+                          :in base-img))))
+
+(defn add-timestamp
+  [ts input-path output-path]
+  (throw-on-failure (sh "convert"
+                        input-path
+                        "-fill" "white"
+                        "-undercolor" "#00000080"
+                        "-gravity" "NorthEast"
+                        "-annotate" "+5+5"
+                        (str "\\ " (.format ts DateTimeFormatter/RFC_1123_DATE_TIME) " ")
+                        output-path)))
 
 (defn get-rain-areas
   [formatted-ts output-path]
@@ -64,13 +82,14 @@
 
 (defn get-latest-rain-areas
   [rain-areas-dir]
-  (loop [ts (get-current-sg-time)]
+  (loop [ts (truncate-timestamp (get-current-sg-time))]
     (let [formatted-ts (get-formatted-timestamp ts)
           output-path (str (Paths/get rain-areas-dir (into-array [(str formatted-ts ".png")])))]
       (if (.exists (io/file output-path))
         output-path
         (let [success? (try
                          (do (get-rain-areas formatted-ts output-path)
+                             (add-timestamp ts output-path output-path)
                              true)
                          (catch FileNotFoundException _
                            false))]
