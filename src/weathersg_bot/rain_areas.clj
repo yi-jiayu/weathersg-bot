@@ -58,9 +58,9 @@
   (let [radar-overlay-url (get-radar-overlay-url formatted-ts)
         temp-file (File/createTempFile "radar" nil)
         overlay-path (.getPath temp-file)]
-    (do (download-radar-overlay radar-overlay-url temp-file)
-        (generate-rain-areas overlay-path output-path)
-        (.delete temp-file))))
+    (download-radar-overlay radar-overlay-url temp-file)
+    (generate-rain-areas overlay-path output-path)
+    (.delete temp-file)))
 
 (defn get-latest-rain-areas
   [rain-areas-dir]
