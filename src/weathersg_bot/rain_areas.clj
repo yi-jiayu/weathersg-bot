@@ -4,7 +4,8 @@
   (:import (java.time ZoneId ZonedDateTime)
            (java.time.format DateTimeFormatter)
            (java.nio.file Paths)
-           (java.io FileNotFoundException File)))
+           (java.io FileNotFoundException File)
+           (java.time.temporal ChronoUnit)))
 
 (def ^ZoneId singapore-zone (ZoneId/of "Asia/Singapore"))
 (def radar-timestamp-formatter (DateTimeFormatter/ofPattern "yyyyMMddHHmm0000"))
@@ -13,7 +14,8 @@
 (defn truncate-timestamp
   "Returns a timestamp rounded down to the closest multiple of 5 minutes."
   [ts]
-  (let [minutes (.getMinute ts)
+  (let [ts (.truncatedTo ts ChronoUnit/MINUTES)
+        minutes (.getMinute ts)
         rounded-minutes (* 5 (Math/floor (/ minutes 5)))
         delta-minutes (- minutes rounded-minutes)
         truncated-ts (.minusMinutes ts delta-minutes)]
