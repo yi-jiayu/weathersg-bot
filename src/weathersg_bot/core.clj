@@ -3,7 +3,7 @@
             [ring.middleware.json :refer [wrap-json-body]]
             [compojure.core :refer :all]
             [compojure.route :as route]
-            [ring.util.response :refer [redirect]]
+            [ring.util.response :refer [response redirect]]
             [ring.util.json-response :refer [json-response]]
             [org.httpkit.server :refer [run-server]]
             [weathersg-bot.rain-areas :refer [get-latest-rain-areas]])
@@ -19,7 +19,8 @@
     (str hostname "rain-areas/" basename)))
 
 (defroutes app
-  (GET "/" _ (redirect (get-latest-rain-areas-url)))
+  (GET "/" _ (response "<a href=\"/rain-areas\">Rain areas</a>"))
+  (GET "/rain-areas" _ (redirect (get-latest-rain-areas-url)))
   (POST (str "/" bot-token) req (let [chat-id (get-in req [:body :message :from :id])
                                       rain-areas-url (get-latest-rain-areas-url)]
                                   (json-response {:method  "sendPhoto"
